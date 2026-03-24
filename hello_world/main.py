@@ -1,5 +1,5 @@
-from PPlay.window import Window
-from PPlay.keyboard import Keyboard
+from PPlay.window import *
+from PPlay.keyboard import *
 
 
 def main():
@@ -7,7 +7,7 @@ def main():
     
     keyboard = Keyboard()
     window = Window(800, 580)
-    window.set_background_color("#FF0000")
+    window.set_background_color("#0000FF")
     window.set_title("Hello World")
 
     while is_running:
@@ -16,7 +16,6 @@ def main():
             window.close()
 
         window.update()
-        window.draw_text("Hello World", window.get_screen().get_width() / 2, window.get_screen().get_height() / 2, 24, (255,255,255))
 
 if __name__ == "__main__":
     main()
