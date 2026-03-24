@@ -17,7 +17,7 @@ def main():
     image_path = os.path.join(base_path, "src", "assets", "ball.png")
 
     ball = Sprite(image_path)
-    ball.set_position(((window.width / 2) - ball.width), (window.height / 2) - ball.height)
+    ball.set_position(((window.width / 2) - (ball.width / 2)), (window.height / 2) - (ball.height / 2))
 
     # Game Loop
     while is_running:
