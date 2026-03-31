@@ -6,13 +6,16 @@ from pplay.sprite import Sprite
 
 base_dir = Path(__file__).resolve().parent
 
+MAX_SPEED = 2
+SPEED_FACTOR = 1.125
+
 
 def move_ball(ball, vx, vy):
     ball.x += vx
     ball.y += vy
 
 
-def speed_up(value, factor, max_speed):
+def speed_up(value, factor = SPEED_FACTOR, max_speed = MAX_SPEED):
     direction = -1 if value < 0 else 1
     new_speed = min(abs(value) * factor, max_speed)
     return direction * new_speed
@@ -22,13 +25,13 @@ def change_directions(window, ball, vx, vy):
     if ball.x <= 0:
         ball.x = 0
         vx *= -1
-        vx = speed_up(vx, 1.12, 6)
-        vy = speed_up(vy, 1.12, 6)
+        vx = speed_up(vx)
+        vy = speed_up(vy)
     elif (ball.x + ball.width) >= window.width:
         ball.x = window.width - ball.width
         vx *= -1
-        vx = speed_up(vx, 1.12, 6)
-        vy = speed_up(vy, 1.12, 6)
+        vx = speed_up(vx)
+        vy = speed_up(vy)
 
     if ball.y <= 0:
         ball.y = 0
