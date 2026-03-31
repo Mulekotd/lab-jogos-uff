@@ -1,5 +1,5 @@
-from PPlay.window import *
-from PPlay.keyboard import *
+from pplay.window import *
+from pplay.keyboard import *
 
 
 def main():

@@ -17,6 +17,6 @@ Para rodar qualquer projeto é necessário adicionar o diretório libs à variá
 
 ```sh
 # Exemplo: para rodar o projeto hello_world
-$env:PYTHONPATH="libs"; python hello_world/main.py # windows
-PYTHONPATH=libs python hello_world/main.py # linux or macOS
+$env:PYTHONPATH="external"; python hello_world/main.py # windows
+PYTHONPATH=external python hello_world/main.py # linux or macOS
 ```
