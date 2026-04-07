@@ -92,11 +92,19 @@ class PongGame:
 
         if (self.ball.x + self.ball.width) < 0:
             self.enemy_score += 1
+
             self.ball.reset_to_center(self.window.width, self.window.height)
+            self.player.set_position(self.player.width, (self.window.height / 2) - (self.player.height / 2))
+            self.enemy.set_position(self.window.width - 2 * self.enemy.width, (self.window.height / 2) - (self.enemy.height / 2))
+
             self.waiting_start = True
         elif self.ball.x > self.window.width:
             self.player_score += 1
+
             self.ball.reset_to_center(self.window.width, self.window.height)
+            self.player.set_position(self.player.width, (self.window.height / 2) - (self.player.height / 2))
+            self.enemy.set_position(self.window.width - 2 * self.enemy.width, (self.window.height / 2) - (self.enemy.height / 2))
+
             self.waiting_start = True
 
     def _clamp_paddles(self):

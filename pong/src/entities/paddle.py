@@ -30,6 +30,10 @@ class Paddle:
     def height(self):
         return self.sprite.height
 
+    def set_position(self, x: float, y: float):
+        self.x = x
+        self.y = y
+
     def move_up(self, dt: float):
         self.y -= self.speed * dt
 
