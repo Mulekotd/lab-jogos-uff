@@ -50,7 +50,7 @@ class MenuScene:
                     self.game.change_scene(button["action"])
                 break
 
-    def update(self):
+    def update(self, dt):
         pass
 
     def draw(self):

@@ -11,7 +11,7 @@ class ScoreScene:
         if self.keyboard.key_pressed("ESC"):
             self.game.change_scene(Scenes.MENU_SCENE)
 
-    def update(self):
+    def update(self, dt):
         pass
 
     def draw(self):

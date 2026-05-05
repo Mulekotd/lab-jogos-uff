@@ -36,6 +36,6 @@ class SpaceInvaders:
         while self.is_running:
             self.dt = self.window.delta_time()
             self.current_scene.handle_input()
-            self.current_scene.update()
+            self.current_scene.update(self.dt)
             self.current_scene.draw()
             self.window.update()
