@@ -30,7 +30,12 @@ class SpaceInvaders:
         self.current_scene = self.scenes[Scenes.MENU_SCENE]
 
     def change_scene(self, scene_id):
+        # Resetar GameScene a cada entrada
+        if scene_id == Scenes.GAME_SCENE:
+            self.scenes[Scenes.GAME_SCENE] = GameScene(self)
         self.current_scene = self.scenes[scene_id]
+        # Resetar rastreamento de clique ao mudar de cena
+        self.current_scene.reset_input_state()
 
     def run(self):
         while self.is_running:

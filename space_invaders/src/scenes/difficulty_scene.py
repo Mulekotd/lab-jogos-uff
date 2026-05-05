@@ -12,15 +12,20 @@ class DifficultyScene:
         self.window = game.window
         self.mouse = game.window.get_mouse()
         self.images_dir = Path(self.game.settings.assets_dir) / "images"
+        self.mouse_pressed_last_frame = False
 
         self.buttons = []
         self._build_buttons()
+    
+    def reset_input_state(self):
+        """Reseta o estado de input ao mudar de cena."""
+        self.mouse_pressed_last_frame = False
 
     def _build_buttons(self):
         options = [
-            ("button_facil.png", Difficulties.EASY),
-            ("button_medio.png", Difficulties.MEDIUM),
-            ("button_dificil.png", Difficulties.HARD),
+            ("button_easy.png", Difficulties.EASY),
+            ("button_medium.png", Difficulties.MEDIUM),
+            ("button_hard.png", Difficulties.HARD),
         ]
 
         button_width = 200
@@ -38,11 +43,17 @@ class DifficultyScene:
             self.buttons.append({"sprite": button, "difficulty": difficulty})
 
     def handle_input(self):
-        if self.mouse.is_button_pressed(self.mouse.BUTTON_LEFT):
+        is_mouse_pressed = self.mouse.is_button_pressed(self.mouse.BUTTON_LEFT)
+        is_clicking = is_mouse_pressed and not self.mouse_pressed_last_frame
+        
+        if is_clicking:
             for button in self.buttons:
                 if self.mouse.is_over_object(button["sprite"]):
                     self.game.current_difficulty = button["difficulty"]
+                    self.game.change_scene(Scenes.MENU_SCENE)
                     break
+        
+        self.mouse_pressed_last_frame = is_mouse_pressed
 
         if self.game.keyboard.key_pressed("ESC"):
             self.game.change_scene(Scenes.MENU_SCENE)

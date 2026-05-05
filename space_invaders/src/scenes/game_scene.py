@@ -8,7 +8,7 @@ class GameScene:
 		self.window = game.window
 		self.keyboard = game.keyboard
 		self.assets_dir = game.settings.assets_dir
-		player_speed = 300
+		player_speed = self._get_player_speed_from_difficulty()
 		player_fire_rate = self._get_fire_rate_from_difficulty()
 
 		self.player = Player(
@@ -21,14 +21,28 @@ class GameScene:
 		
 		self.bullets = []
 
-	def _get_fire_rate_from_difficulty(self):
-		if self.game.current_difficulty == Difficulties.EASY:
-			return 0.5
-		elif self.game.current_difficulty == Difficulties.MEDIUM:
-			return 0.3
-		elif self.game.current_difficulty == Difficulties.HARD:
-			return 0.15
+	def reset_input_state(self):
+		"""Reseta o estado de input ao mudar de cena."""
+		pass
 
+	def _get_player_speed_from_difficulty(self):
+		"""Velocidade do player: EASY mais rápido, HARD mais lento."""
+		if self.game.current_difficulty == Difficulties.EASY:
+			return 400
+		elif self.game.current_difficulty == Difficulties.MEDIUM:
+			return 300
+		elif self.game.current_difficulty == Difficulties.HARD:
+			return 200
+		return 300
+
+	def _get_fire_rate_from_difficulty(self):
+		"""Fire rate: EASY dispara rápido, HARD dispara lento (maior tempo entre tiros)."""
+		if self.game.current_difficulty == Difficulties.EASY:
+			return 0.3
+		elif self.game.current_difficulty == Difficulties.MEDIUM:
+			return 0.5
+		elif self.game.current_difficulty == Difficulties.HARD:
+			return 0.8
 		return 0.5
 
 	def handle_input(self):

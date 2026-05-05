@@ -12,16 +12,21 @@ class MenuScene:
         self.window = game.window
         self.mouse = game.window.get_mouse()
         self.images_dir = Path(self.game.settings.assets_dir) / "images"
+        self.mouse_pressed_last_frame = False
 
         self.buttons = []
         self._build_buttons()
+    
+    def reset_input_state(self):
+        """Reseta o estado de input ao mudar de cena."""
+        self.mouse_pressed_last_frame = False
 
     def _build_buttons(self):
         actions = [
             ("button_play.png", Scenes.GAME_SCENE),
-            ("button_dificuldade.png", Scenes.DIFFICULTY_SCENE),
+            ("button_difficultie.png", Scenes.DIFFICULTY_SCENE),
             ("button_ranking.png", Scenes.RANKING_SCENE),
-            ("button_sair.png", self.game.window.close),
+            ("button_exit.png", self.game.window.close),
         ]
 
         button_width = 200
@@ -39,16 +44,21 @@ class MenuScene:
             self.buttons.append({"sprite": button, "action": action})
 
     def handle_input(self):
-        if not self.mouse.is_button_pressed(self.mouse.BUTTON_LEFT):
-            return
-
-        for button in self.buttons:
-            if self.mouse.is_over_object(button["sprite"]):
-                if callable(button["action"]):
-                    button["action"]()
-                else:
-                    self.game.change_scene(button["action"])
-                break
+        is_mouse_pressed = self.mouse.is_button_pressed(self.mouse.BUTTON_LEFT)
+        # Detecta clique apenas na transição: passou de solto para pressionado
+        is_clicking = is_mouse_pressed and not self.mouse_pressed_last_frame
+        
+        if is_clicking:
+            for button in self.buttons:
+                if self.mouse.is_over_object(button["sprite"]):
+                    if callable(button["action"]):
+                        button["action"]()
+                    else:
+                        self.game.change_scene(button["action"])
+                    break
+        
+        # Atualizar estado para próxima frame
+        self.mouse_pressed_last_frame = is_mouse_pressed
 
     def update(self, dt):
         pass

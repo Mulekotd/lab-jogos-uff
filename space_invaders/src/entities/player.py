@@ -14,10 +14,10 @@ class Player:
         self.fire_cooldown = 0.0
 
     def update(self, dt, keyboard, window_width):
-        if keyboard.key_pressed("left"):
+        if keyboard.key_pressed("LEFT") or keyboard.key_pressed("A"):
             self.sprite.x -= self.speed * dt
 
-        if keyboard.key_pressed("right"):
+        if keyboard.key_pressed("RIGHT") or keyboard.key_pressed("D"):
             self.sprite.x += self.speed * dt
 
         if self.sprite.x < -self.sprite.width:
