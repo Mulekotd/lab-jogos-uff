@@ -1,5 +1,5 @@
-from pplay.keyboard import Keyboard
-from pplay.window import Window
+from pplay.legacy.keyboard import Keyboard
+from pplay.legacy.window import Window
 
 from src.system.enums import Scenes
 from src.system.settings import GameSettings
@@ -24,17 +24,16 @@ class SpaceInvaders:
             Scenes.MENU_SCENE: MenuScene(self),
             Scenes.GAME_SCENE: GameScene(self),
             Scenes.DIFFICULTY_SCENE: DifficultyScene(self),
-            Scenes.RANKING_SCENE: ScoreScene(self),
+            Scenes.RANKING_SCENE: ScoreScene(self)
         }
 
         self.current_scene = self.scenes[Scenes.MENU_SCENE]
 
     def change_scene(self, scene_id):
-        # Resetar GameScene a cada entrada
         if scene_id == Scenes.GAME_SCENE:
             self.scenes[Scenes.GAME_SCENE] = GameScene(self)
+
         self.current_scene = self.scenes[scene_id]
-        # Resetar rastreamento de clique ao mudar de cena
         self.current_scene.reset_input_state()
 
     def run(self):

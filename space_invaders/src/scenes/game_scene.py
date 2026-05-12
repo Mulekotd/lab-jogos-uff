@@ -1,5 +1,6 @@
-from src.system.enums import Scenes, Difficulties
+from src.entities.alien_formation import AlienFormation
 from src.entities.player import Player
+from src.system.enums import Scenes, Difficulties
 
 
 class GameScene:
@@ -20,13 +21,18 @@ class GameScene:
 		)
 		
 		self.bullets = []
+		self.aliens = AlienFormation(
+			self.game.settings.alien_rows,
+			self.game.settings.alien_cols,
+			self.assets_dir,
+			self.window.width,
+			self.player.sprite.y
+		)
 
 	def reset_input_state(self):
-		"""Reseta o estado de input ao mudar de cena."""
 		pass
 
 	def _get_player_speed_from_difficulty(self):
-		"""Velocidade do player: EASY mais rápido, HARD mais lento."""
 		if self.game.current_difficulty == Difficulties.EASY:
 			return 400
 		elif self.game.current_difficulty == Difficulties.MEDIUM:
@@ -36,7 +42,6 @@ class GameScene:
 		return 300
 
 	def _get_fire_rate_from_difficulty(self):
-		"""Fire rate: EASY dispara rápido, HARD dispara lento (maior tempo entre tiros)."""
 		if self.game.current_difficulty == Difficulties.EASY:
 			return 0.3
 		elif self.game.current_difficulty == Difficulties.MEDIUM:
@@ -57,6 +62,9 @@ class GameScene:
 
 	def update(self, dt):
 		self.player.update(dt, self.keyboard, self.window.width)
+
+		if self.aliens.update(dt, self.window.width):
+			self.game.change_scene(Scenes.MENU_SCENE)
 		
 		for bullet in self.bullets[:]:
 			bullet.update(dt)
@@ -67,7 +75,16 @@ class GameScene:
 	def draw(self):
 		self.window.set_background_color((0, 0, 0))
 
+		self.aliens.draw()
 		self.player.draw()
 
 		for bullet in self.bullets:
 			bullet.draw()
+
+		fps = 0 if self.game.dt <= 0 else int(round(1.0 / self.game.dt))
+		fps_text = f"FPS: {fps}"
+
+		x = self.window.width - 80
+		y = 12
+
+		self.window.draw_text(fps_text, x, y, 14, (255, 255, 255), "Arial", True)

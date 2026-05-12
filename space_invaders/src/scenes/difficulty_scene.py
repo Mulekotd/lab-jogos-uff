@@ -1,7 +1,7 @@
 
 from pathlib import Path
 
-from pplay.sprite import Sprite
+from pplay.legacy.sprite import Sprite
 
 from src.system.enums import Difficulties, Scenes
 
@@ -18,14 +18,13 @@ class DifficultyScene:
         self._build_buttons()
     
     def reset_input_state(self):
-        """Reseta o estado de input ao mudar de cena."""
         self.mouse_pressed_last_frame = False
 
     def _build_buttons(self):
         options = [
             ("button_easy.png", Difficulties.EASY),
             ("button_medium.png", Difficulties.MEDIUM),
-            ("button_hard.png", Difficulties.HARD),
+            ("button_hard.png", Difficulties.HARD)
         ]
 
         button_width = 200

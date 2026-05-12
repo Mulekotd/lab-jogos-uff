@@ -8,7 +8,6 @@ class ScoreScene:
         self.keyboard = game.keyboard
     
     def reset_input_state(self):
-        """Reseta o estado de input ao mudar de cena."""
         pass
 
     def handle_input(self):

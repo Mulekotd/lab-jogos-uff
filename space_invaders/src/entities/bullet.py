@@ -1,4 +1,4 @@
-from pplay.sprite import Sprite
+from pplay.legacy.sprite import Sprite
 
 
 class Bullet:

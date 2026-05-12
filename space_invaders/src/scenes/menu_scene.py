@@ -1,7 +1,7 @@
 
 from pathlib import Path
 
-from pplay.sprite import Sprite
+from pplay.legacy.sprite import Sprite
 
 from src.system.enums import Scenes
 
@@ -18,7 +18,6 @@ class MenuScene:
         self._build_buttons()
     
     def reset_input_state(self):
-        """Reseta o estado de input ao mudar de cena."""
         self.mouse_pressed_last_frame = False
 
     def _build_buttons(self):
@@ -26,7 +25,7 @@ class MenuScene:
             ("button_play.png", Scenes.GAME_SCENE),
             ("button_difficultie.png", Scenes.DIFFICULTY_SCENE),
             ("button_ranking.png", Scenes.RANKING_SCENE),
-            ("button_exit.png", self.game.window.close),
+            ("button_exit.png", self.game.window.close)
         ]
 
         button_width = 200
@@ -45,7 +44,6 @@ class MenuScene:
 
     def handle_input(self):
         is_mouse_pressed = self.mouse.is_button_pressed(self.mouse.BUTTON_LEFT)
-        # Detecta clique apenas na transição: passou de solto para pressionado
         is_clicking = is_mouse_pressed and not self.mouse_pressed_last_frame
         
         if is_clicking:
@@ -57,7 +55,6 @@ class MenuScene:
                         self.game.change_scene(button["action"])
                     break
         
-        # Atualizar estado para próxima frame
         self.mouse_pressed_last_frame = is_mouse_pressed
 
     def update(self, dt):
@@ -68,4 +65,3 @@ class MenuScene:
 
         for button in self.buttons:
             button["sprite"].draw()
-
