@@ -86,17 +86,21 @@ class AlienFormation:
 
     def _get_horizontal_bounds(self):
         live_aliens = [alien for row in self.matrix for alien in row]
+
         if not live_aliens:
             return None, None
 
         left_edge = min(alien.x for alien in live_aliens)
         right_edge = max(alien.x + alien.width for alien in live_aliens)
+
         return left_edge, right_edge
 
     def _reached_player_height(self) -> bool:
         live_aliens = [alien for row in self.matrix for alien in row]
+
         if not live_aliens:
             return False
 
         lowest = max(alien.y + alien.height for alien in live_aliens)
+
         return lowest >= self.player_y

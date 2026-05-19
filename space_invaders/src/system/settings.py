@@ -4,8 +4,8 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class GameSettings:
-    window_width: int = 800
-    window_height: int = 580
+    window_width: int = 480
+    window_height: int = 720
 
     title: str = "Space Invaders"
 

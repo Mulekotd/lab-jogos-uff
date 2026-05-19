@@ -45,7 +45,6 @@ class Player:
         if self.fire_cooldown <= 0:
             self.fire_cooldown = self.fire_rate
             bullet = Bullet(self.animation.x + self.animation.width / 2, self.animation.y, 400, self.assets_dir)
-
             return bullet
 
         return None
