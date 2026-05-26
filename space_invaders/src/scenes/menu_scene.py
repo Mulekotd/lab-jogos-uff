@@ -22,10 +22,10 @@ class MenuScene:
 
     def _build_buttons(self):
         actions = [
-            ("button_play.png", Scenes.GAME_SCENE),
-            ("button_difficultie.png", Scenes.DIFFICULTY_SCENE),
-            ("button_ranking.png", Scenes.RANKING_SCENE),
-            ("button_exit.png", self.game.window.close)
+            ("play_button.png", Scenes.GAME_SCENE),
+            ("difficulty_button.png", Scenes.DIFFICULTY_SCENE),
+            ("ranking_button.png", Scenes.RANKING_SCENE),
+            ("exit_button.png", self.game.window.close)
         ]
 
         button_width = 200

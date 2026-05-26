@@ -16,7 +16,7 @@ pip install pygame
 Para rodar qualquer projeto é necessário adicionar o diretório libs à variável de ambiente PYTHONPATH.
 
 ```sh
-# Exemplo: para rodar o projeto hello_world
-$env:PYTHONPATH="external"; python hello_world/main.py # windows
-PYTHONPATH=external python hello_world/main.py # linux or macOS
+# Exemplo: para rodar o projeto space_invaders
+$env:PYTHONPATH="external"; python space_invaders/main.py # windows
+PYTHONPATH=external python space_invaders/main.py # linux or macOS
 ```

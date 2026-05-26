@@ -37,7 +37,7 @@ class AlienFormation:
                 sprite = Sprite(str(self.assets_dir / "images" / alien_name))
                 sprite.set_position(
                     start_x + col * (self.cell_width + self.spacing_x),
-                    self.margin_top + row * (self.cell_height + self.spacing_y),
+                    self.margin_top + row * (self.cell_height + self.spacing_y)
                 )
                 row_sprites.append(sprite)
             self.matrix.append(row_sprites)
@@ -86,7 +86,6 @@ class AlienFormation:
 
     def _get_horizontal_bounds(self):
         live_aliens = [alien for row in self.matrix for alien in row]
-
         if not live_aliens:
             return None, None
 
@@ -97,7 +96,6 @@ class AlienFormation:
 
     def _reached_player_height(self) -> bool:
         live_aliens = [alien for row in self.matrix for alien in row]
-
         if not live_aliens:
             return False
 

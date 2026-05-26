@@ -24,6 +24,9 @@ class Player:
         self.assets_dir = assets_dir
         self.fire_cooldown = 0.0
 
+    def set_position(self, x, y):
+        self.animation.set_position(x, y)
+
     def update(self, dt, keyboard, window_width):
         self.animation.update(dt)
 
@@ -44,13 +47,19 @@ class Player:
     def shoot(self):
         if self.fire_cooldown <= 0:
             self.fire_cooldown = self.fire_rate
-            bullet = Bullet(self.animation.x + self.animation.width / 2, self.animation.y, 400, self.assets_dir)
+            bullet = Bullet(x=self.animation.x + self.animation.width / 2,
+                            y=self.animation.y,
+                            speed=400,
+                            bullet_asset="player_bullet.png",
+                            assets_dir=self.assets_dir,
+                            direction=-1)
             return bullet
 
         return None
 
-    def draw(self):
-        self.animation.draw()
+    def draw(self, visible=True):
+        if visible:
+            self.animation.draw()
 
     @property
     def sprite(self):
