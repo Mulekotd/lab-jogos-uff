@@ -4,6 +4,7 @@ from src.entities.alien_formation import AlienFormation
 from src.entities.bullet import Bullet
 from src.entities.player import Player
 from src.system.enums import Scenes, Difficulties
+from src.system.ranking import save_ranking_entry
 
 
 class GameScene:
@@ -19,6 +20,11 @@ class GameScene:
 		self.fps_value = 0
 		self.fps_elapsed = 0.0
 		self.fps_frame_count = 0
+		self.score = 0
+		self.current_wave = 1
+		self.game_over = False
+		self.game_over_screen_drawn = False
+		self.ranking_saved = False
 		self.player_total_lives = self._get_player_lives_from_difficulty()
 		self.player_current_lives = self.player_total_lives
 		self.player_invincible_time = 0.0
@@ -27,7 +33,8 @@ class GameScene:
 		self.player_blink_interval = 0.15
 
 		self.enemy_bullets = []
-		self.enemy_fire_rate = self._get_enemy_fire_rate_from_difficulty()
+		self.base_enemy_fire_rate = self._get_enemy_fire_rate_from_difficulty()
+		self.enemy_fire_rate = self._get_enemy_fire_rate_for_wave()
 		self.enemy_fire_timer = 0.0
 		self.enemy_fire_cooldown = self._roll_enemy_fire_cooldown()
 
@@ -35,11 +42,11 @@ class GameScene:
 		player_fire_rate = self._get_fire_rate_from_difficulty()
 
 		self.player = Player(
-			self.player_spawn_x,
-			self.player_spawn_y,
-			player_speed,
-			player_fire_rate,
-			self.assets_dir
+			assets_dir=self.assets_dir,
+			x=self.player_spawn_x,
+			y=self.player_spawn_y,
+			speed=player_speed,
+			fire_rate=player_fire_rate
 		)
 		
 		self.bullets = []
@@ -49,12 +56,14 @@ class GameScene:
 		pass
 
 	def _create_aliens(self):
+		rows, cols = self._get_formation_size_for_wave()
 		return AlienFormation(
-			self.game.settings.alien_rows,
-			self.game.settings.alien_cols,
-			self.assets_dir,
-			self.window.width,
-			self.player.sprite.y
+			rows=rows,
+			cols=cols,
+			assets_dir=self.assets_dir,
+			window_width=self.window.width,
+			player_y=self.player.sprite.y,
+			speed=self._get_alien_speed_for_wave()
 		)
 
 	def _has_alive_aliens(self):
@@ -62,6 +71,12 @@ class GameScene:
 
 	def _respawn_aliens_if_needed(self):
 		if not self._has_alive_aliens():
+			self.current_wave += 1
+			self.bullets.clear()
+			self.enemy_bullets.clear()
+			self.enemy_fire_timer = 0.0
+			self.enemy_fire_rate = self._get_enemy_fire_rate_for_wave()
+			self.enemy_fire_cooldown = self._roll_enemy_fire_cooldown()
 			self.aliens = self._create_aliens()
 
 	def _get_live_aliens(self):
@@ -115,6 +130,28 @@ class GameScene:
 			return 0.7
 		return 0.9
 
+	def _get_wave_multiplier(self):
+		return 1.0 + (self.current_wave - 1) * 0.08
+
+	def _get_score_multiplier(self):
+		return 1.0 + (self.current_wave - 1) * 0.12
+
+	def _get_enemy_fire_rate_for_wave(self):
+		return max(0.25, self.base_enemy_fire_rate / self._get_wave_multiplier())
+
+	def _get_alien_speed_for_wave(self):
+		return 55.0 * self._get_wave_multiplier()
+
+	def _get_formation_size_for_wave(self):
+		growth_steps = (self.current_wave - 1) // 5
+		rows = min(6, 4 + growth_steps)
+		cols = min(10, 4 + growth_steps * 2)
+		return rows, cols
+
+	def _get_alien_score(self, row_index):
+		base_points = (self.aliens.rows - row_index) * 100
+		return int(round(base_points * self._get_score_multiplier()))
+
 	def _roll_enemy_fire_cooldown(self):
 		scale = randint(85, 120) / 100.0
 		return self.enemy_fire_rate * scale
@@ -133,7 +170,26 @@ class GameScene:
 		self.player_visible = False
 
 		if self.player_current_lives <= 0:
-			self.game.change_scene(Scenes.MENU_SCENE)
+			self._start_game_over()
+
+	def _start_game_over(self):
+		self.game_over = True
+		self.game_over_screen_drawn = False
+
+	def _save_score_and_return_to_menu(self):
+		if self.ranking_saved:
+			return
+
+		print("\nGAME OVER")
+		print(f"Pontuacao final: {self.score}")
+		try:
+			player_name = input("Digite seu nome para salvar no ranking: ")
+		except EOFError:
+			player_name = "ANONIMO"
+
+		save_ranking_entry(player_name, self.score)
+		self.ranking_saved = True
+		self.game.change_scene(Scenes.MENU_SCENE)
 
 	def _fire_enemy_bullet(self):
 		live_aliens = self._get_live_aliens()
@@ -191,6 +247,9 @@ class GameScene:
 		return False
 
 	def handle_input(self):
+		if self.game_over:
+			return
+
 		if self.keyboard.key_pressed("ESC"):
 			self.game.change_scene(Scenes.MENU_SCENE)
 		
@@ -219,15 +278,21 @@ class GameScene:
 		if bx + bw < left or bx > right or by + bh < top or by > bottom:
 			return False
 
-		for line in reversed(matrix):
+		for row_index in range(len(matrix) - 1, -1, -1):
+			line = matrix[row_index]
 			for alien in list(line):
 				if bullet.sprite.collided(alien):
 					line.remove(alien)
-					return True
+					return self._get_alien_score(row_index)
 
-		return False
+		return 0
 
 	def update(self, dt):
+		if self.game_over:
+			if self.game_over_screen_drawn and not self.ranking_saved:
+				self._save_score_and_return_to_menu()
+			return
+
 		self.fps_elapsed += dt
 		self.fps_frame_count += 1
 
@@ -240,16 +305,18 @@ class GameScene:
 		self._update_player_invincibility(dt)
 
 		if self.aliens.update(dt, self.window.width):
-			self.game.change_scene(Scenes.MENU_SCENE)
+			self._start_game_over()
+			return
 
 		self._update_enemy_fire(dt)
 		formation_bounds = self._get_formation_bounds()
 		
 		for bullet in self.bullets[:]:
 			bullet.update(dt)
-			hit = self.check_collision(bullet, formation_bounds)
+			hit_score = self.check_collision(bullet, formation_bounds)
 		
-			if hit:
+			if hit_score:
+				self.score += hit_score
 				if bullet in self.bullets:
 					self.bullets.remove(bullet)
 				continue
@@ -277,6 +344,11 @@ class GameScene:
 	def draw(self):
 		self.window.set_background_color((0, 0, 0))
 
+		if self.game_over:
+			self._draw_game_over()
+			self.game_over_screen_drawn = True
+			return
+
 		self.aliens.draw()
 		self.player.draw(self.player_visible)
 
@@ -289,8 +361,23 @@ class GameScene:
 		life_text = f"{self.player_current_lives}/{self.player_total_lives}"
 		self.window.draw_text(life_text, 12, 12, 18, (220, 40, 40), "Arial", True)
 
+		wave_text = f"WAVE: {self.current_wave}"
+		self.window.draw_text(wave_text, 12, 36, 14, (180, 180, 180), "Arial", True)
+
+		score_text = f"SCORE: {self.score}"
+		self._draw_centered_text(score_text, 12, 20, (255, 255, 255), True)
+
 		fps_text = f"FPS: {self.fps_value}"
-		x = self.window.width - 12 - 96
+		x = self.window.width - 12 - 64
 		y = 12
 
 		self.window.draw_text(fps_text, x, y, 14, (255, 255, 255), "Arial", True)
+
+	def _draw_game_over(self):
+		self._draw_centered_text("GAME OVER", 260, 42, (255, 70, 70), True)
+		self._draw_centered_text(f"SCORE: {self.score}", 320, 24, (255, 255, 255), True)
+
+	def _draw_centered_text(self, text, y, size, color, bold=False):
+		text_width = len(text) * size * 0.58
+		x = int((self.window.width - text_width) / 2)
+		self.window.draw_text(text, x, y, size, color, "Arial", bold)

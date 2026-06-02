@@ -10,19 +10,22 @@ from pplay.legacy.window import Window
 class Animation:
     def __init__(self, sprite_path: str | Path, width: int, height: int, gap: int, actions: Iterable[str], frame_rate: int = 120):
         self.sprite_path = Path(sprite_path)
+        self.sheet, _ = load_image(str(self.sprite_path), alpha=True)
+        
         self.frame_width = max(1, int(width))
         self.frame_height = max(1, int(height))
         self.gap = max(0, int(gap))
-        self.actions = list(actions)
-        self.frame_rate = max(1, int(frame_rate))
 
-        self.sheet, _ = load_image(str(self.sprite_path), alpha=True)
-        self.frames: dict[str, list[Any]] = {action: [] for action in self.actions}
+        self.x = 0.0
+        self.y = 0.0
+
+        self.actions = list(actions)
         self.current_action = self.actions[0] if self.actions else ""
         self.current_index = 0
         self.elapsed_ms = 0
-        self.x = 0.0
-        self.y = 0.0
+
+        self.frames: dict[str, list[Any]] = {action: [] for action in self.actions}
+        self.frame_rate = max(1, int(frame_rate))
 
         self._slice_frames()
 
@@ -32,6 +35,7 @@ class Animation:
 
         sheet_width = self.sheet.get_width()
         sheet_height = self.sheet.get_height()
+        
         row_height = self.frame_height
         row_step = self.frame_height + self.gap
 

@@ -6,19 +6,21 @@ from pplay.legacy.sprite import Sprite
 
 
 class AlienFormation:
-    def __init__(self, rows: int, cols: int, assets_dir: Path, window_width: int, player_y: float):
-        self.rows = max(4, int(rows))
-        self.cols = max(6, int(cols))
+    def __init__(self, rows: int, cols: int, assets_dir: Path, window_width: int, player_y: float, speed: float = 55.0):
+        self.rows = max(1, min(6, int(rows)))
+        self.cols = max(1, min(10, int(cols)))
         self.assets_dir = Path(assets_dir)
         self.window_width = window_width
         self.player_y = player_y
 
         self.direction = 1
-        self.speed = 55.0
+        self.speed = float(speed)
         self.drop_distance = 16
         self.drawn_once = False
+
         self.cell_width = 32
         self.cell_height = 32
+
         self.spacing_x = self.cell_width // 2
         self.spacing_y = self.cell_height // 2
         self.margin_top = 64
