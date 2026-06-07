@@ -13,7 +13,7 @@ pip install pygame
 
 ## Run project
 
-Para rodar qualquer projeto é necessário adicionar o diretório libs à variável de ambiente PYTHONPATH.
+Para rodar qualquer projeto é necessário adicionar o diretório external à variável de ambiente PYTHONPATH.
 
 ```sh
 # Exemplo: para rodar o projeto space_invaders
