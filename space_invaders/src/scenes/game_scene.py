@@ -67,7 +67,7 @@ class GameScene:
 		)
 
 	def _has_alive_aliens(self):
-		return any(line for line in self.aliens.matrix)
+		return bool(self.aliens.get_live_aliens())
 
 	def _respawn_aliens_if_needed(self):
 		if not self._has_alive_aliens():
@@ -80,19 +80,10 @@ class GameScene:
 			self.aliens = self._create_aliens()
 
 	def _get_live_aliens(self):
-		return [alien for row in self.aliens.matrix for alien in row]
+		return self.aliens.get_live_aliens()
 
 	def _get_formation_bounds(self):
-		live_aliens = self._get_live_aliens()
-		if not live_aliens:
-			return None
-
-		left = min(alien.x for alien in live_aliens)
-		right = max(alien.x + alien.width for alien in live_aliens)
-		top = min(alien.y for alien in live_aliens)
-		bottom = max(alien.y + alien.height for alien in live_aliens)
-
-		return left, right, top, bottom
+		return self.aliens.get_bounds()
 
 	def _get_player_speed_from_difficulty(self):
 		if self.game.current_difficulty == Difficulties.EASY:
@@ -182,6 +173,7 @@ class GameScene:
 
 		print("\nGAME OVER")
 		print(f"Pontuacao final: {self.score}")
+
 		try:
 			player_name = input("Digite seu nome para salvar no ranking: ")
 		except EOFError:
@@ -260,32 +252,11 @@ class GameScene:
 				self.bullets.append(bullet)
 	
 	def check_collision(self, bullet, bounds=None):
-		matrix = self.aliens.matrix
-		if bounds is None:
-			bounds = self._get_formation_bounds()
+		hit_positions = self.aliens.check_bullet_collision(bullet.sprite, bounds)
+		if not hit_positions:
+			return 0
 
-		if bounds is None:
-			return False
-
-		left, right, top, bottom = bounds
-
-		bx = bullet.sprite.x
-		by = bullet.sprite.y
-
-		bw = getattr(bullet.sprite, 'width', 0)
-		bh = getattr(bullet.sprite, 'height', 0)
-
-		if bx + bw < left or bx > right or by + bh < top or by > bottom:
-			return False
-
-		for row_index in range(len(matrix) - 1, -1, -1):
-			line = matrix[row_index]
-			for alien in list(line):
-				if bullet.sprite.collided(alien):
-					line.remove(alien)
-					return self._get_alien_score(row_index)
-
-		return 0
+		return sum(self._get_alien_score(row_index) for row_index, _ in hit_positions)
 
 	def update(self, dt):
 		if self.game_over:
